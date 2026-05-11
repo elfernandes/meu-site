@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Elber Leonardo Fernandes — SAP ABAP Specialist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #080f1e;
+    --navy2: #0d1a2d;
+    --navy3: #0f2040;
+    --cyan: #00e5c8;
+    --cyan2: #00bfa5;
+    --cyan-dim: rgba(0,229,200,0.12);
+    --cyan-glow: rgba(0,229,200,0.06);
+    --white: #f0f4ff;
+    --muted: rgba(200,215,240,0.55);
+    --border: rgba(0,229,200,0.15);
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    cursor: none;
+  }
+  .cursor { position: fixed; top: 0; left: 0; z-index: 9999; pointer-events: none; }
+  .cursor-dot {
+    width: 6px; height: 6px;
+    background: var(--cyan); border-radius: 50%;
+    position: absolute; transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(0,229,200,0.5); border-radius: 50%;
+    position: absolute; transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s, border-color 0.3s;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,200,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,200,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none; z-index: 0;
+  }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.4rem 3rem;
+    background: rgba(8,15,30,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--font-mono); font-size: 0.78rem;
+    color: var(--cyan); letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--muted); text-decoration: none;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    transition: color 0.3s; position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
+    height: 1px; background: var(--cyan);
+    transform: scaleX(0); transition: transform 0.3s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 8rem 3rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg-orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); pointer-events: none;
+  }
+  .hero-bg-orb-1 {
+    width: 600px; height: 400px;
+    background: radial-gradient(circle, rgba(0,191,165,0.12) 0%, transparent 70%);
+    top: 10%; right: -10%;
+    animation: orb-float 8s ease-in-out infinite;
+  }
+  .hero-bg-orb-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,100,200,0.1) 0%, transparent 70%);
+    bottom: 10%; left: -5%;
+    animation: orb-float 10s ease-in-out infinite reverse;
+  }
+  @keyframes orb-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    border: 1px solid var(--border); border-radius: 2px;
+    padding: 0.35rem 0.85rem; margin-bottom: 2rem;
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--cyan); letter-spacing: 0.15em; text-transform: uppercase;
+    width: fit-content; animation: fade-up 0.8s ease both;
+  }
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--cyan); border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+  .hero-name {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    line-height: 0.9; letter-spacing: -0.03em;
+    animation: fade-up 0.8s 0.1s ease both;
+  }
+  .hero-name span { color: var(--cyan); }
+  .hero-subtitle {
+    margin-top: 2.5rem;
+    font-family: var(--font-mono); font-size: 0.85rem;
+    color: var(--muted); letter-spacing: 0.05em;
+    max-width: 480px; line-height: 1.8;
+    animation: fade-up 0.8s 0.2s ease both;
+  }
+  .hero-stats {
+    display: flex; gap: 3rem;
+    margin-top: 3.5rem;
+    animation: fade-up 0.8s 0.3s ease both;
+  }
+  .hero-stat-num {
+    font-family: var(--font-display); font-size: 2.8rem;
+    font-weight: 800; color: var(--cyan); line-height: 1;
+  }
+  .hero-stat-label {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-top: 0.3rem;
+  }
+  .hero-cta {
+    display: flex; gap: 1rem;
+    margin-top: 3rem;
+    animation: fade-up 0.8s 0.4s ease both;
+  }
+  .btn-primary {
+    font-family: var(--font-mono); font-size: 0.75rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--navy); background: var(--cyan);
+    border: none; padding: 0.9rem 2rem;
+    cursor: none; text-decoration: none;
+    transition: background 0.3s, transform 0.2s; display: inline-block;
+  }
+  .btn-primary:hover { background: #00fff0; transform: translateY(-2px); }
+  .btn-secondary {
+    font-family: var(--font-mono); font-size: 0.75rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--cyan); background: transparent;
+    border: 1px solid var(--border); padding: 0.9rem 2rem;
+    cursor: none; text-decoration: none;
+    transition: border-color 0.3s, background 0.3s; display: inline-block;
+  }
+  .btn-secondary:hover { border-color: var(--cyan); background: var(--cyan-dim); }
+  .hero-scroll {
+    position: absolute; bottom: 2.5rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    font-family: var(--font-mono); font-size: 0.62rem;
+    color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
+    animation: fade-up 1s 0.8s ease both;
+  }
+  .hero-scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+    animation: scroll-line 2s ease-in-out infinite;
+  }
+  @keyframes scroll-line {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  section { position: relative; z-index: 1; padding: 7rem 3rem; }
+  .section-label {
+    font-family: var(--font-mono); font-size: 0.68rem;
+    color: var(--cyan); letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem;
+  }
+  .section-label::before {
+    content: ''; display: block; width: 24px; height: 1px; background: var(--cyan);
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; line-height: 1.05;
+    letter-spacing: -0.02em; margin-bottom: 3.5rem;
+  }
+  .about { background: var(--navy2); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; align-items: start;
+  }
+  .about-text {
+    font-family: var(--font-body); font-size: 1.05rem;
+    font-weight: 300; color: rgba(200,215,240,0.8); line-height: 1.9;
+  }
+  .about-text strong { color: var(--cyan); font-weight: 500; }
+  .about-detail { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.2rem; }
+  .about-detail-item {
+    display: flex; align-items: center; gap: 1rem;
+    font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted);
+  }
+  .about-detail-item span:first-child { color: var(--cyan); min-width: 80px; }
+  .terminal-card {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border); border-radius: 3px; overflow: hidden;
+  }
+  .terminal-header {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(0,229,200,0.05);
+    border-bottom: 1px solid var(--border);
+  }
+  .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .terminal-dot.r { background: #ff5f57; }
+  .terminal-dot.y { background: #ffbd2e; }
+  .terminal-dot.g { background: #28c840; }
+  .terminal-title {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    color: var(--muted); margin-left: auto; letter-spacing: 0.08em;
+  }
+  .terminal-body {
+    padding: 1.5rem; font-family: var(--font-mono);
+    font-size: 0.78rem; line-height: 2;
+  }
+  .t-comment { color: rgba(0,229,200,0.4); }
+  .t-key { color: #7dd3fc; }
+  .t-val { color: #86efac; }
+  .t-str { color: #fde68a; }
+  .t-num { color: #f9a8d4; }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5px; background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .skill-card {
+    background: var(--navy); padding: 2rem;
+    transition: background 0.3s; position: relative; overflow: hidden;
+  }
+  .skill-card:hover { background: var(--navy2); }
+  .skill-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%; background: var(--cyan);
+    transform: scaleY(0); transform-origin: bottom; transition: transform 0.3s;
+  }
+  .skill-card:hover::before { transform: scaleY(1); }
+  .skill-card-num {
+    font-family: var(--font-mono); font-size: 0.62rem;
+    color: rgba(0,229,200,0.35); letter-spacing: 0.12em; margin-bottom: 1rem;
+  }
+  .skill-card-name {
+    font-family: var(--font-display); font-size: 1.1rem;
+    font-weight: 700; margin-bottom: 0.6rem; color: var(--white);
+  }
+  .skill-card-desc {
+    font-family: var(--font-body); font-size: 0.8rem;
+    color: var(--muted); line-height: 1.7;
+  }
+  .skill-bar {
+    margin-top: 1.2rem; height: 2px;
+    background: rgba(0,229,200,0.12); border-radius: 2px; overflow: hidden;
+  }
+  .skill-bar-fill {
+    height: 100%; background: var(--cyan); border-radius: 2px;
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .skill-card.visible .skill-bar-fill { transform: scaleX(1); }
+  .experience { background: var(--navy2); }
+  .exp-timeline { position: relative; padding-left: 2rem; }
+  .exp-timeline::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+  .exp-item { position: relative; margin-bottom: 4rem; padding-left: 2.5rem; }
+  .exp-item::before {
+    content: ''; position: absolute; left: -2rem; top: 0.35rem;
+    width: 8px; height: 8px;
+    border: 1px solid var(--cyan); background: var(--navy);
+    transform: translateX(-50%); transition: background 0.3s;
+  }
+  .exp-item:hover::before { background: var(--cyan); }
+  .exp-period {
+    font-family: var(--font-mono); font-size: 0.68rem;
+    color: var(--cyan); letter-spacing: 0.1em; margin-bottom: 0.4rem;
+  }
+  .exp-company {
+    font-family: var(--font-display); font-size: 1.4rem;
+    font-weight: 700; margin-bottom: 0.2rem;
+  }
+  .exp-role {
+    font-family: var(--font-mono); font-size: 0.75rem;
+    color: var(--muted); margin-bottom: 1.2rem; letter-spacing: 0.05em;
+  }
+  .exp-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
+  .exp-tag {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    color: var(--cyan); background: var(--cyan-dim);
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+  .exp-bullets li {
+    font-family: var(--font-body); font-size: 0.85rem;
+    color: rgba(200,215,240,0.7); line-height: 1.6;
+    padding-left: 1.2rem; position: relative;
+  }
+  .exp-bullets li::before { content: '›'; position: absolute; left: 0; color: var(--cyan); }
+  .edu-cards {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1.5px; background: var(--border); border: 1px solid var(--border);
+  }
+  .edu-card { background: var(--navy); padding: 2.5rem; transition: background 0.3s; }
+  .edu-card:hover { background: var(--navy2); }
+  .edu-school {
+    font-family: var(--font-display); font-size: 1.3rem;
+    font-weight: 700; margin-bottom: 0.3rem; color: var(--cyan);
+  }
+  .edu-degree {
+    font-family: var(--font-body); font-size: 0.9rem;
+    color: var(--white); margin-bottom: 0.5rem; font-weight: 300;
+  }
+  .edu-period {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    color: var(--muted); letter-spacing: 0.1em;
+  }
+  .contact {
+    text-align: center; padding: 8rem 3rem;
+    background: var(--navy); position: relative; overflow: hidden;
+  }
+  .contact::before {
+    content: 'CONTATO';
+    position: absolute; font-family: var(--font-display);
+    font-size: 16vw; font-weight: 800;
+    color: rgba(0,229,200,0.025);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    white-space: nowrap; pointer-events: none; letter-spacing: -0.05em;
+  }
+  .contact-email {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 800; color: var(--cyan);
+    text-decoration: none; letter-spacing: -0.02em;
+    display: inline-block; margin: 2rem 0; position: relative;
+  }
+  .contact-email::after {
+    content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+    height: 2px; background: var(--cyan);
+    transform: scaleX(0.3); transform-origin: left; transition: transform 0.4s;
+  }
+  .contact-email:hover::after { transform: scaleX(1); }
+  .contact-links { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; }
+  .contact-link {
+    font-family: var(--font-mono); font-size: 0.75rem;
+    color: var(--muted); text-decoration: none;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    transition: color 0.3s; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .contact-link:hover { color: var(--cyan); }
+  .contact-link svg { width: 16px; height: 16px; }
+  footer {
+    padding: 1.5rem 3rem; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  footer span {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    color: rgba(200,215,240,0.3); letter-spacing: 0.1em;
+  }
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 4rem 1.5rem; }
+    .hero { padding: 7rem 1.5rem 4rem; }
+    .hero-stats { gap: 2rem; flex-wrap: wrap; }
+    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .edu-cards { grid-template-columns: 1fr; }
+    body { cursor: auto; }
+    .cursor { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor">
+  <div class="cursor-ring" id="cursorRing"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+</div>
+
+<nav>
+  <div class="nav-logo">ELF · ABAP Specialist</div>
+  <ul class="nav-links">
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experiencia">Experiência</a></li>
+    <li><a href="#educacao">Formação</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+</nav>
+
+<section class="hero" id="inicio">
+  <div class="hero-bg-orb hero-bg-orb-1"></div>
+  <div class="hero-bg-orb hero-bg-orb-2"></div>
+  <div class="hero-badge">SAP ABAP Specialist</div>
+  <h1 class="hero-name">
+    Elber<br/>
+    Leonardo<br/>
+    <span>Fernandes</span>
+  </h1>
+  <p class="hero-subtitle">
+    // Especialista em desenvolvimento ABAP,<br/>
+    // migração ECC → S/4HANA RISE<br/>
+    // &amp; performance tuning em sistemas SAP críticos.
+  </p>
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-num">13+</div>
+      <div class="hero-stat-label">Anos de<br/>experiência</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">03</div>
+      <div class="hero-stat-label">Grandes<br/>empresas</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">S/4</div>
+      <div class="hero-stat-label">HANA RISE<br/>Migration</div>
+    </div>
+  </div>
+  <div class="hero-cta">
+    <a href="#contato" class="btn-primary">Entrar em contato</a>
+    <a href="#experiencia" class="btn-secondary">Ver experiência</a>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    scroll
+  </div>
+</section>
+
+<section class="about" id="sobre">
+  <div class="section-label">Sobre</div>
+  <h2 class="section-title reveal">Quem sou eu</h2>
+  <div class="about-grid">
+    <div>
+      <p class="about-text reveal">
+        Com mais de <strong>13 anos de experiência</strong> como desenvolvedor ABAP, atuo na interseção entre
+        performance crítica, migração de plataformas e desenvolvimento de soluções SAP de ponta a ponta.
+      </p>
+      <p class="about-text reveal reveal-delay-1" style="margin-top:1.2rem">
+        Pós-graduado em <strong>Engenharia e Administração de Sistemas de Banco de Dados pela UNICAMP</strong>,
+        combino sólida base técnica com liderança em projetos estratégicos — incluindo a condução da
+        <strong>migração de dados ECC para S/4HANA RISE</strong> no Grupo Petrópolis.
+      </p>
+      <div class="about-detail reveal reveal-delay-2">
+        <div class="about-detail-item">
+          <span>Localização</span>
+          <span>São Paulo, Brasil</span>
+        </div>
+        <div class="about-detail-item">
+          <span>E-mail</span>
+          <span>elber.fernandes@outlook.com</span>
+        </div>
+        <div class="about-detail-item">
+          <span>LinkedIn</span>
+          <span>elber-leonardo-fernandes</span>
+        </div>
+      </div>
+    </div>
+    <div class="terminal-card reveal reveal-delay-1">
+      <div class="terminal-header">
+        <div class="terminal-dot r"></div>
+        <div class="terminal-dot y"></div>
+        <div class="terminal-dot g"></div>
+        <span class="terminal-title">elber_profile.json</span>
+      </div>
+      <div class="terminal-body">
+        <span class="t-comment">// desenvolvedor</span><br/>
+        {<br/>
+        &nbsp;&nbsp;<span class="t-key">"nome"</span>: <span class="t-str">"Elber Leonardo Fernandes"</span>,<br/>
+        &nbsp;&nbsp;<span class="t-key">"cargo"</span>: <span class="t-str">"SAP ABAP Specialist"</span>,<br/>
+        &nbsp;&nbsp;<span class="t-key">"empresa"</span>: <span class="t-str">"Grupo Petrópolis"</span>,<br/>
+        &nbsp;&nbsp;<span class="t-key">"experiencia"</span>: <span class="t-num">13</span>,<span class="t-comment"> // anos</span><br/>
+        &nbsp;&nbsp;<span class="t-key">"formacao"</span>: <span class="t-str">"UNICAMP"</span>,<br/>
+        &nbsp;&nbsp;<span class="t-key">"especialidades"</span>: [<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"ABAP OO"</span>,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"S/4HANA RISE"</span>,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"Performance Tuning"</span>,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"RAP / CDS Views"</span>,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"SAP BTP"</span><br/>
+        &nbsp;&nbsp;],<br/>
+        &nbsp;&nbsp;<span class="t-key">"disponivel"</span>: <span class="t-val">true</span><br/>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="section-label">Competências</div>
+  <h2 class="section-title reveal">Stack técnico</h2>
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <div class="skill-card-num">01</div>
+      <div class="skill-card-name">ALV &amp; Reports</div>
+      <div class="skill-card-desc">Relatórios ALV complexos, module pool e batch input com foco em usabilidade e alta performance.</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:98%"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-1">
+      <div class="skill-card-num">02</div>
+      <div class="skill-card-name">BAPI &amp; RFC</div>
+      <div class="skill-card-desc">Integração de sistemas via BAPIs e Function Modules RFC para comunicação entre sistemas SAP e externos.</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:95%"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-2">
+      <div class="skill-card-num">03</div>
+      <div class="skill-card-name">Enhancements</div>
+      <div class="skill-card-desc">User exits, field exits, screen exits, BAdIs e implicit/explicit enhancements para extensão de funcionalidades SAP.</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:97%"></div></div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-card-num">04</div>
+      <div class="skill-card-name">Fiori &amp; WebDynpro</div>
+      <div class="skill-card-desc">Atualização e manutenção de aplicativos Fiori e WebDynpro para interface moderna e responsiva.</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:80%"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-1">
+      <div class="skill-card-num">05</div>
+      <div class="skill-card-name">ABAP OO</div>
+      <div class="skill-card-desc">Classes, interfaces, herança, polimorfismo e padrões de design orientados a objetos no contexto SAP.</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:85%"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-2">
+      <div class="skill-card-num">06</div>
+      <div class="skill-card-name">S/4HANA RISE</div>
+      <div class="skill-card-desc">Liderança técnica na migração ECC → S/4HANA RISE — análise de impacto e adaptação de código legado.</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-card-num">07</div>
+      <div class="skill-card-name">RAP &amp; CDS Views</div>
+      <div class="skill-card-desc">RESTful Application Programming model e Core Data Services para desenvolvimento cloud-native em SAP.</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:75%"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-1">
+      <div class="skill-card-num">08</div>
+      <div class="skill-card-name">Performance Tuning</div>
+      <div class="skill-card-desc">Análise e otimização de código ABAP, depuração avançada e implementação de melhorias de runtime crítico.</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:96%"></div></div>
+    </div>
+    <div class="skill-card reveal reveal-delay-2">
+      <div class="skill-card-num">09</div>
+      <div class="skill-card-name">Workflow &amp; SAP BTP</div>
+      <div class="skill-card-desc">Desenvolvimento e manutenção de fluxos de Workflow SAP e exploração de SAP Business Technology Platform.</div>
+      <div class="skill-bar"><div class="skill-bar-fill" style="width:82%"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="experience" id="experiencia">
+  <div class="section-label">Trajetória</div>
+  <h2 class="section-title reveal">Experiência profissional</h2>
+  <div class="exp-timeline">
+    <div class="exp-item reveal">
+      <div class="exp-period">OUT 2021 — PRESENTE · 3+ ANOS</div>
+      <div class="exp-company">Grupo Petrópolis</div>
+      <div class="exp-role">Especialista SAP ABAP · Boituva, SP</div>
+      <div class="exp-tags">
+        <span class="exp-tag">S/4HANA RISE</span>
+        <span class="exp-tag">ABAP OO</span>
+        <span class="exp-tag">Fiori</span>
+        <span class="exp-tag">Workflow</span>
+        <span class="exp-tag">Líder Técnico</span>
+      </div>
+      <ul class="exp-bullets">
+        <li>Líder técnico ABAP na migração de dados do ECC para S/4HANA RISE — projeto de maior impacto estratégico.</li>
+        <li>Desenvolvimento avançado em Report Simples, ALV, BatchInput, Module Pool e RFCs.</li>
+        <li>Atualização e manutenção de aplicativos Fiori e WebDynpro.</li>
+        <li>Desenvolvimento e manutenção de fluxos e rotinas em Workflow SAP.</li>
+        <li>Enhancements, BAdIs e screen exits para extensão de funcionalidades core.</li>
+      </ul>
+    </div>
+    <div class="exp-item reveal">
+      <div class="exp-period">SET 2017 — SET 2021 · 4 ANOS</div>
+      <div class="exp-company">Alpargatas S.A.</div>
+      <div class="exp-role">ABAP Developer · São Paulo, SP</div>
+      <div class="exp-tags">
+        <span class="exp-tag">ALV</span>
+        <span class="exp-tag">Enhancements</span>
+        <span class="exp-tag">SAPScript</span>
+        <span class="exp-tag">Smart Forms</span>
+        <span class="exp-tag">Performance</span>
+      </div>
+      <ul class="exp-bullets">
+        <li>Desenvolvimento e manutenção de programas ABAP complexos — ALV, Batch-Input, Module Pool, RFCs.</li>
+        <li>Análise e implementação de melhorias de performance em código legado de alta criticidade.</li>
+        <li>Desenvolvimento de formulários SAPScript e Smart Forms para processos de negócio.</li>
+        <li>Criação e manutenção de fluxos Workflow e elaboração de estimativas técnicas.</li>
+      </ul>
+    </div>
+    <div class="exp-item reveal">
+      <div class="exp-period">JAN 2013 — AGO 2017 · 4 ANOS E 8 MESES</div>
+      <div class="exp-company">Grupo Camargo Corrêa</div>
+      <div class="exp-role">ABAP Developer · São Paulo, SP</div>
+      <div class="exp-tags">
+        <span class="exp-tag">ABAP</span>
+        <span class="exp-tag">RFC</span>
+        <span class="exp-tag">User Exits</span>
+        <span class="exp-tag">Debugging</span>
+      </div>
+      <ul class="exp-bullets">
+        <li>Desenvolvimento de programas ABAP, dicionário de dados e funções RFC para sistemas críticos.</li>
+        <li>Implementação de User Exits, Field Exits e Screen Exits para customização de processos SAP.</li>
+        <li>Análise e identificação de erros em processos com depuração avançada de código complexo.</li>
+        <li>Desenvolvimento de formulários e manutenção de fluxos Workflow.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="educacao">
+  <div class="section-label">Formação</div>
+  <h2 class="section-title reveal">Educação</h2>
+  <div class="edu-cards">
+    <div class="edu-card reveal">
+      <div class="edu-school">UNICAMP</div>
+      <div class="edu-degree">Especialização em Engenharia e Administração<br/>de Sistemas de Banco de Dados</div>
+      <div class="edu-period">2017 — 2018</div>
+    </div>
+    <div class="edu-card reveal reveal-delay-1">
+      <div class="edu-school">UNISAL</div>
+      <div class="edu-degree">Bacharel em Sistemas de Informação<br/>Centro Universitário Salesiano de São Paulo</div>
+      <div class="edu-period">2012 — 2015</div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contato">
+  <div class="section-label" style="justify-content:center">Contato</div>
+  <h2 class="section-title" style="font-size:clamp(1.5rem,3vw,2.5rem);margin-bottom:0.5rem">Vamos conversar?</h2>
+  <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem">
+    // disponível para projetos e oportunidades
+  </p>
+  <a href="mailto:elber.fernandes@outlook.com" class="contact-email">elber.fernandes@outlook.com</a>
+  <div class="contact-links">
+    <a href="https://www.linkedin.com/in/elber-leonardo-fernandes" target="_blank" class="contact-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/>
+        <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+      </svg>
+      LinkedIn
+    </a>
+    <a href="mailto:elber.fernandes@outlook.com" class="contact-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M4 4h16c1.1 0 2 .9 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+      E-mail
+    </a>
+  </div>
+</section>
+
+<footer>
+  <span>© 2025 · Elber Leonardo Fernandes</span>
+  <span>SAP ABAP Specialist · São Paulo, BR</span>
+</footer>
+
+<script>
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+  (function animCursor(){
+    dot.style.left=mx+'px';dot.style.top=my+'px';
+    rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;
+    ring.style.left=rx+'px';ring.style.top=ry+'px';
+    requestAnimationFrame(animCursor);
+  })();
+
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}
+    });
+  },{threshold:0.12});
+  document.querySelectorAll('.reveal,.skill-card').forEach(el=>observer.observe(el));
+
+  const sections=document.querySelectorAll('section[id]');
+  const navLinks=document.querySelectorAll('.nav-links a');
+  const navObs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        navLinks.forEach(a=>{
+          a.style.color=a.getAttribute('href')==='#'+e.target.id?'var(--cyan)':'';
+        });
+      }
+    });
+  },{threshold:0.4});
+  sections.forEach(s=>navObs.observe(s));
+</script>
+</body>
+</html>
